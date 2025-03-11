@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MASCHINENPROFIL.v3</title>
+  <style>
+    /* KERN-SYSTEM */
+    body {
+      background-color: #0a0a0a;
+      margin: 0;
+      padding: 0;
+      cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH1QMCCjANHZfwBQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAALElEQVQI12NgwAXYGBgYGP5jAUxQifm4FPzHZgITFrFyZAwCC6JLnsCl4AQAjkgGEXR1ZfEAAAAASUVORK5CYII='), auto;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: "Courier New", monospace;
+      background-image: linear-gradient(to bottom, 
+                rgba(20, 20, 20, 0.9), 
+                rgba(10, 10, 10, 0.9)),
+                url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABcqRVCAAAAGnRSTlMAAwgBBRINCxkPLCE3Fi8aJiAqHjQdKR0mGHsd/+8AAACiSURBVEjH7dK7EoMgFIThRRRUiPGS93/QHaxtZMYmZSr+mqNfAV7iuWAUFVhE8qizK1VgJVP/eLHbRVqhiERvN+Mw5QyXR4SZ0ZiIcK/tFjHyvWAxEL/twO8mbP0dEhcRGq2P0jYoYhMZ4ublQUdERASGKHKFpBBix78xEaGZ08AwVzHVKUQeQjAfw+Jy559D/SAREcGF5g7fzO8jEW6+U6Kv0QeSjuICPuNQDQAAAABJRU5ErkJggg==');
+    }
+
+    /* HAUPTGEHÄUSE */
+    .maschine-gehaeuse {
+      width: 420px;
+      height: 500px;
+      position: relative;
+      overflow: visible;
+    }
+
+    /* TECHNISCHE RAHMENSTRUKTUR */
+    .rahmenstruktur {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1a1a1a 0%, #0e0e0e 100%);
+      border: 2px solid #333;
+      box-shadow: 
+        0 0 0 1px #000, 
+        inset 0 0 1px 1px rgba(90, 90, 90, 0.2),
+        0 0 20px rgba(0, 0, 0, 0.9);
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    /* METALLVERKLEIDUNG */
+    .metallverkleidung {
+      position: absolute;
+      left: -20px;
+      top: -20px;
+      right: -20px;
+      bottom: -20px;
+      z-index: -1;
+      background: linear-gradient(45deg, #111111 25%, #1a1a1a 25%, #1a1a1a 50%, #111111 50%, #111111 75%, #1a1a1a 75%, #1a1a1a);
+      background-size: 20px 20px;
+      opacity: 0.5;
+      box-shadow: inset 0 0 50px 20px rgba(0, 0, 0, 0.8);
+    }
+
+    /* ROTE BETRIEBSLICHTER */
+    .betriebslicht {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ff0000, #800000);
+      box-shadow: 0 0 5px #ff0000;
+    }
+
+    .licht-1 { top: 15px; right: 15px; animation: blinken 2.7s infinite; }
+    .licht-2 { top: 15px; right: 30px; animation: blinken 1.8s infinite; }
+    .licht-3 { top: 15px; right: 45px; animation: blinken 3.3s infinite; }
+    .licht-4 { bottom: 15px; left: 15px; animation: blinken 2.3s infinite; }
+    .licht-5 { bottom: 15px; left: 30px; animation: blinken 4s infinite; }
+    .licht-6 { bottom: 15px; left: 45px; animation: blinken 1.5s infinite; }
+
+    @keyframes blinken {
+      0%, 92% { opacity: 1; }
+      93%, 94% { opacity: 0.3; }
+      95%, 96% { opacity: 0.8; }
+      97%, 100% { opacity: 1; }
+    }
+
+    /* STAHLSCHRAUBEN */
+    .schraube {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: radial-gradient(circle at 40% 40%, #444, #222);
+      border-radius: 50%;
+      border: 1px solid #111;
+      box-shadow: inset -1px -1px 2px rgba(0,0,0,0.8);
+    }
+
+    .schraube:after {
+      content: "+";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 10px;
+      color: #111;
+    }
+
+    .s-ol { top: 10px; left: 10px; }
+    .s-or { top: 10px; right: 10px; }
+    .s-ul { bottom: 10px; left: 10px; }
+    .s-ur { bottom: 10px; right: 10px; }
+    .s-ml { top: 50%; left: 10px; transform: translateY(-50%); }
+    .s-mr { top: 50%; right: 10px; transform: translateY(-50%); }
+
+    /* SYSTEMKOPF */
+    .systemkopf {
+      height: 30px;
+      background: linear-gradient(to right, #1a1a1a, #222);
+      border-bottom: 2px solid #ff0000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .titel {
+      color: #ff0000;
+      font-size: 14px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+    }
+
+    .steuerung {
+      display: flex;
+      gap: 5px;
+    }
+
+    .kontrolle {
+      width: 12px;
+      height: 12px;
+      border: 1px solid #444;
+      position: relative;
+    }
+    
+    .kontrolle:after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      right: 2px;
+      bottom: 2px;
+    }
+
+    .k-rot:after { background-color: #ff0000; }
+    .k-gelb:after { background-color: #ff9900; }
+    .k-gruen:after { background-color: #00cc00; }
+
+    /* DATENDISPLAY */
+    .datendisplay {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: 60px 1fr;
+      background-color: #0e0e0e;
+      border: 1px solid #222;
+      margin: 10px;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.9);
+      overflow: hidden;
+    }
+
+    /* IDENTITÄTSPANEEL */
+    .identitaet {
+      display: flex;
+      align-items: center;
+      padding: 5px;
+      background: linear-gradient(to right, #111111, #1a1a1a);
+      border-bottom: 1px solid #333;
+    }
+
+    .profilbild {
+      width: 50px;
+      height: 50px;
+      background-color: #222;
+      border: 1px solid #444;
+      margin-right: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profilbild img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(80%) contrast(120%);
+    }
+
+    .idcode {
+      font-family: "Lucida Console", Monaco, monospace;
+      color: #ff0000;
+      font-size: 18px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-bottom: 3px;
+    }
+
+    .untercode {
+      color: #666;
+      font-size: 9px;
+      letter-spacing: 1px;
+    }
+
+    /* DATENBEREICH */
+    .datenbereich {
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #444 #111;
+      padding: 5px;
+    }
+
+    .datenbereich::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .datenbereich::-webkit-scrollbar-track {
+      background: #111;
+    }
+
+    .datenbereich::-webkit-scrollbar-thumb {
+      background-color: #444;
+      border: 1px solid #333;
+    }
+
+    /* DATENSEKTION */
+    .sektion {
+      margin-bottom: 10px;
+      background-color: #161616;
+      border: 1px solid #333;
+      border-left: 3px solid #ff0000;
+    }
+
+    .sektionskopf {
+      background-color: #1a1a1a;
+      padding: 4px 8px;
+      font-size: 10px;
+      color: #ff0000;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sektionsinhalt {
+      padding: 5px;
+    }
+
+    /* DATENTABELLE */
+    .datentabelle {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    .datentabelle tr:not(:last-child) {
+      border-bottom: 1px solid #222;
+    }
+
+    .datentabelle td {
+      padding: 3px 5px;
+    }
+
+    .tabelle-bezeichnung {
+      color: #888;
+      width: 40%;
+    }
+
+    .tabelle-wert {
+      color: #ddd;
+    }
+
+    /* STATUSLEISTEN */
+    .statusleisten {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      margin-top: 5px;
+    }
+
+    .statuseintrag {
+      display: flex;
+      align-items: center;
+      font-size: 9px;
+    }
+
+    .statusname {
+      width: 50px;
+      color: #888;
+      margin-right: 5px;
+      text-transform: uppercase;
+    }
+
+    .statusbalken {
+      flex: 1;
+      height: 6px;
+      background-color: #222;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .statusfuellung {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: linear-gradient(to right, #800000, #ff0000);
+    }
+
+    .statuswert {
+      width: 25px;
+      text-align: right;
+      color: #ff0000;
+      margin-left: 5px;
+    }
+
+    /* TERMINALAUSGABE */
+    .terminal {
+      background-color: #0a0a0a;
+      border: 1px solid #333;
+      padding: 5px;
+      font-family: "Lucida Console", Monaco, monospace;
+      font-size: 9px;
+      line-height: 1.2;
+      color: #33ff33;
+      height: 40px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .kommandozeile {
+      display: flex;
+      color: #33ff33;
+    }
+
+    .prompt {
+      color: #ff0000;
+      margin-right: 5px;
+    }
+
+    .eingabe {
+      flex: 1;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 4px;
+      height: 9px;
+      background-color: #33ff33;
+      vertical-align: middle;
+      animation: cursor-blinken 1s step-end infinite;
+    }
+
+    @keyframes cursor-blinken {
+      0%, 50% { opacity: 1; }
+      50.1%, 100% { opacity: 0; }
+    }
+
+    /* STATUSZEILENLEISTE */
+    .statuszeilenleiste {
+      height: 20px;
+      background-color: #1a1a1a;
+      border-top: 1px solid #333;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      justify-content: space-between;
+      color: #666;
+      font-size: 9px;
+    }
+
+    .statusanzeige {
+      display: flex;
+      align-items: center;
+    }
+
+    .statuslampe {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #33ff33;
+      margin-right: 5px;
+      box-shadow: 0 0 3px #33ff33;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; box-shadow: 0 0 3px #33ff33; }
+      50% { opacity: 0.5; box-shadow: 0 0 1px #33ff33; }
+      100% { opacity: 1; box-shadow: 0 0 3px #33ff33; }
+    }
+
+    /* WARNSTREIFENBAND */
+    .warnstreifen {
+      position: absolute;
+      width: 140px;
+      height: 24px;
+      background: repeating-linear-gradient(
+        45deg,
+        #000000,
+        #000000 10px,
+        #ff0000 10px,
+        #ff0000 20px
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-shadow: 1px 1px 1px #000000;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+    }
+
+    .warnstreifen-ol {
+      transform: rotate(-45deg);
+      top: 10px;
+      left: -35px;
+    }
+
+    .warnstreifen-ur {
+      transform: rotate(135deg);
+      bottom: 10px;
+      right: -35px;
+    }
+
+    /* SERIENNUMMER */
+    .seriennummer {
+      position: absolute;
+      bottom: -18px;
+      left: 0;
+      font-size: 10px;
+      color: #666;
+      font-family: "Digital", monospace;
+      letter-spacing: 1px;
+    }
+
+    /* MODELLBEZEICHNUNG */
+    .modellbezeichnung {
+      position: absolute;
+      top: -18px;
+      right: 0;
+      font-size: 10px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    /* HINTERGRUNDDEKORATIONEN */
+    .hintergrundobjekt {
+      position: fixed;
+      z-index: -1;
+      opacity: 0.4;
+      filter: contrast(150%) brightness(70%);
+    }
+  </style>
+</head>
+<body>
+  <script>
+    // HINTERGRUNDOBJEKT-GENERATOR
+    function erzeugeHintergrundobjekte() {
+      const groessen = [
+        [40, 40], [60, 60], [30, 30], [70, 70], 
+        [50, 50], [80, 80], [35, 35], [45, 45]
+      ];
+      
+      // 18 OBJEKTE ERZEUGEN
+      for (let i = 0; i < 18; i++) {
+        const obj = document.createElement('img');
+        obj.src = `/api/placeholder/${groessen[i % groessen.length][0]}/${groessen[i % groessen.length][1]}`;
+        obj.alt = '';
+        obj.className = 'hintergrundobjekt';
+        
+        // POSITIONIERUNG
+        const oben = Math.random() * 100;
+        const links = Math.random() * 100;
+        obj.style.top = `${oben}vh`;
+        obj.style.left = `${links}vw`;
+        
+        // BEWEGUNGSRICHTUNG
+        const richtung = i % 2 === 0 ? 1 : -1;
+        const geschwindigkeit = 0.005 + Math.random() * 0.015;
+        
+        // ROTATION
+        const rotation = Math.random() * 30 - 15;
+        obj.style.transform = `rotate(${rotation}deg)`;
+        
+        document.body.appendChild(obj);
+        
+        // BEWEGUNGSALGORITHMUS
+        let position = links;
+        setInterval(() => {
+          position += geschwindigkeit * richtung;
+          if (position > 110) position = -10;
+          if (position < -10) position = 110;
+          obj.style.left = `${position}vw`;
+        }, 50);
+      }
+    }
+
+    // TERMINALSIMULATION
+    function simuliereTerminal() {
+      const befehle = [
+        'INITIALIZING SYSTEM...',
+        'ACCESS CODE VERIFIED',
+        'CORE MODULES LOADED',
+        'SECURITY PROTOCOLS ACTIVE',
+        'READY FOR INPUT'
+      ];
+      
+      const terminal = document.getElementById('terminalausgabe');
+      let befehlIndex = 0;
+      let zeichenIndex = 0;
+      
+      function naechstesZeichen() {
+        if (befehlIndex >= befehle.length) {
+          document.getElementById('befehlszeile').style.display = 'flex';
+          return;
+        }
+        
+        if (zeichenIndex < befehle[befehlIndex].length) {
+          terminal.textContent += befehle[befehlIndex][zeichenIndex];
+          zeichenIndex++;
+          setTimeout(naechstesZeichen, 30 + Math.random() * 50);
+        } else {
+          terminal.textContent += '\n';
+          befehlIndex++;
+          zeichenIndex = 0;
+          setTimeout(naechstesZeichen, 400);
+        }
+      }
+      
+      naechstesZeichen();
+    }
+
+    // SYSTEMINITIALISIERUNG
+    window.onload = function() {
+      erzeugeHintergrundobjekte();
+      simuliereTerminal();
+      
+      // DATUM AKTUALISIEREN
+      const jetzt = new Date();
+      const datumFormatiert = jetzt.toISOString().split('T')[0].replace(/-/g, '.');
+      document.getElementById('systemdatum').textContent = datumFormatiert;
+    };
+  </script>
+
+  <div class="maschine-gehaeuse">
+    <div class="metallverkleidung"></div>
+    <div class="warnstreifen warnstreifen-ol">GESPERRT</div>
+    <div class="warnstreifen warnstreifen-ur">AUTORISIERT</div>
+    <span class="seriennummer">SN//775.422.9V</span>
+    <span class="modellbezeichnung">MODEL-PROFIL-V3</span>
+
+    <div class="rahmenstruktur">
+      <!-- BETRIEBSLICHTER -->
+      <div class="betriebslicht licht-1"></div>
+      <div class="betriebslicht licht-2"></div>
+      <div class="betriebslicht licht-3"></div>
+      <div class="betriebslicht licht-4"></div>
+      <div class="betriebslicht licht-5"></div>
+      <div class="betriebslicht licht-6"></div>
+
+      <!-- SCHRAUBEN -->
+      <div class="schraube s-ol"></div>
+      <div class="schraube s-or"></div>
+      <div class="schraube s-ul"></div>
+      <div class="schraube s-ur"></div>
+      <div class="schraube s-ml"></div>
+      <div class="schraube s-mr"></div>
+
+      <!-- SYSTEMKOPF -->
+      <div class="systemkopf">
+        <div class="titel">PROFIL.DATEN</div>
+        <div class="steuerung">
+          <div class="kontrolle k-rot"></div>
+          <div class="kontrolle k-gelb"></div>
+          <div class="kontrolle k-gruen"></div>
+        </div>
+      </div>
+
+      <!-- DATENDISPLAY -->
+      <div class="datendisplay">
+        <!-- IDENTITÄTSPANEEL -->
+        <div class="identitaet">
+          <div class="profilbild">
+            <img src="https://files.catbox.moe/grurjt.png" alt="Profil">
+          </div>
+          <div>
+            <div class="idcode">SUBJEKT-775</div>
+            <div class="untercode">KLASSIFIZIERUNG: ALPHA-PROTOKOLL</div>
+          </div>
+        </div>
+
+        <!-- DATENBEREICH -->
+        <div class="datenbereich">
+          <!-- BASISDATEN -->
+          <div class="sektion">
+            <div class="sektionskopf">
+              <span>GRUNDDATEN</span>
+              <span style="font-size: 9px; color: #666;">REF:01/A</span>
+            </div>
+            <div class="sektionsinhalt">
+              <table class="datentabelle">
+                <tr>
+                  <td class="tabelle-bezeichnung">SPEZIES</td>
+                  <td class="tabelle-wert">[SYSTEM.CHAR.SPECIES]</td>
+                </tr>
+                <tr>
+                  <td class="tabelle-bezeichnung">ALTER</td>
+                  <td class="tabelle-wert">[SYSTEM.CHAR.AGE]</td>
+                </tr>
+                <tr>
+                  <td class="tabelle-bezeichnung">FUNKTION</td>
+                  <td class="tabelle-wert">[SYSTEM.CHAR.OCCUPATION]</td>
+                </tr>
+                <tr>
+                  <td class="tabelle-bezeichnung">HERKUNFT</td>
+                  <td class="tabelle-wert">[SYSTEM.CHAR.ORIGIN]</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- STATUSWERTE -->
+          <div class="sektion">
+            <div class="sektionskopf">
+              <span>LEISTUNGSWERTE</span>
+              <span style="font-size: 9px; color: #666;">REF:02/B</span>
+            </div>
+            <div class="sektionsinhalt">
+              <div class="statusleisten">
+                <div class="statuseintrag">
+                  <div class="statusname">KRAFT</div>
+                  <div class="statusbalken">
+                    <div class="statusfuellung" style="width: 65%"></div>
+                  </div>
+                  <div class="statuswert">65</div>
+                </div>
+                <div class="statuseintrag">
+                  <div class="statusname">INTEL</div>
+                  <div class="statusbalken">
+                    <div class="statusfuellung" style="width: 82%"></div>
+                  </div>
+                  <div class="statuswert">82</div>
+                </div>
+                <div class="statuseintrag">
+                  <div class="statusname">AGIL</div>
+                  <div class="statusbalken">
+                    <div class="statusfuellung" style="width: 70%"></div>
+                  </div>
+                  <div class="statuswert">70</div>
+                </div>
+                <div class="statuseintrag">
+                  <div class="statusname">AUSD</div>
+                  <div class="statusbalken">
+                    <div class="statusfuellung" style="width: 75%"></div>
+                  </div>
+                  <div class="statuswert">75</div>
+                </div>
+                <div class="statuseintrag">
+                  <div class="statusname">CHARI</div>
+                  <div class="statusbalken">
+                    <div class="statusfuellung" style="width: 60%"></div>
+                  </div>
+                  <div class="statuswert">60</div>
+                </div>
+                <div class="statuseintrag">
+                  <div class="statusname">STEALTH</div>
+                  <div class="statusbalken">
+                    <div class="statusfuellung" style="width: 78%"></div>
+                  </div>
+                  <div class="statuswert">78</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VERBINDUNGEN -->
+          <div class="sektion">
+            <div class="sektionskopf">
+              <span>VERBINDUNGEN</span>
+              <span style="font-size: 9px; color: #666;">REF:03/C</span>
+            </div>
+            <div class="sektionsinhalt">
+              <table class="datentabelle">
+                <tr>
+                  <td class="tabelle-bezeichnung">ALLIANZ</td>
+                  <td class="tabelle-wert">[SYSTEM.RELATION.ALLY_1]</td>
+                </tr>
+                <tr>
+                  <td class="tabelle-bezeichnung">FEIND</td>
+                  <td class="tabelle-wert">[SYSTEM.RELATION.ENEMY_1]</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- PRÄFERENZEN -->
+          <div class="sektion">
+            <div class="sektionskopf">
+              <span>PRÄFERENZEN</span>
+              <span style="font-size: 9px; color: #666;">REF:04/D</span>
+            </div>
+            <div class="sektionsinhalt">
+              <table class="datentabelle">
+                <tr>
+                  <td class="tabelle-bezeichnung">AFFINITÄT</td>
+                  <td class="tabelle-wert">[SYSTEM.PREF.LIKE_1], [SYSTEM.PREF.LIKE_2]</td>
+                </tr>
+                <tr>
+                  <td class="tabelle-bezeichnung">AVERSION</td>
+                  <td class="tabelle-wert">[SYSTEM.PREF.DISLIKE_1], [SYSTEM.PREF.DISLIKE_2]</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+
+          <!-- TERMINAL -->
+          <div class="terminal">
+            <div id="terminalausgabe"></div>
+            <div id="befehlszeile" style="display: none" class="kommandozeile">
+              <span class="prompt">></span>
+              <span class="eingabe"></span>
+              <span class="cursor"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATUSZEILE -->
+      <div class="statuszeilenleiste">
+        <div class="statusanzeige">
+          <div class="statuslampe"></div>
+          <span>SYSTEM MADE BY NUMBPILLED // DEAD GIRL 2133</span>
+        </div>
+        <div>
+          <span>V.3.775</span> • <span id="systemdatum">10.03.2025</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
